@@ -1,0 +1,39 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: generate-test
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  refreshInterval: "0"
+  target:
+    name: generate-test
+    creationPolicy: Owner
+  dataFrom:
+    - sourceRef:
+        generatorRef:
+          apiVersion: generators.external-secrets.io/v1alpha1
+          kind: ClusterGenerator
+          name: password-generator
+      rewrite:
+        - regexp:
+            source: "password"
+            target: "LLDAP_LDAP_USER_PASS"
+    - sourceRef:
+        generatorRef:
+          apiVersion: generators.external-secrets.io/v1alpha1
+          kind: ClusterGenerator
+          name: password-generator
+      rewrite:
+        - regexp:
+            source: "password"
+            target: "LLDAP_JWT_SECRET"
+    - sourceRef:
+        generatorRef:
+          apiVersion: generators.external-secrets.io/v1alpha1
+          kind: ClusterGenerator
+          name: password-generator
+      rewrite:
+        - regexp:
+            source: "password"
+            target: "LLDAP_KEY_SEED"

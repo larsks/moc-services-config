@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lldap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: lldap
+          image: lldap
+          env:
+            - name: LLDAP_LDAP_USER_EMAIL
+              value: contact@massopen.cloud
+            - name: LLDAP_LDAP_USER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-admin-password
+                  key: password
+            - name: LLDAP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-jwt-secret
+                  key: password
+            - name: LLDAP_KEY_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-key-seed
+                  key: password
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-pguser-lldap
+                  key: user
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-pguser-lldap
+                  key: password
+            - name: PG_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-pguser-lldap
+                  key: host
+            - name: PG_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-pguser-lldap
+                  key: port
+            - name: PG_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-pguser-lldap
+                  key: dbname
+            - name: LLDAP_DATABASE_URL
+              value: "postgres://$(PG_USER):$(PG_PASSWORD)@$(PG_HOST):$(PG_PORT)/$(PG_DBNAME)?-c%20search_path%3Dlldap"
+            - name: LLDAP_VERBOSE
+              value: "true"
+          ports:
+            - containerPort: 3890
+              name: ldap
+              hostPort: 3890
+            - containerPort: 17170
+              name: ui
+              hostPort: 17170
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+        - name: bootstrap
+          image: lldap
+          command: ["/bin/bash", "-c", "/app/bootstrap.sh && sleep infinity"]
+          env:
+            - name: LLDAP_URL
+              value: "http://localhost:17170"
+            - name: LLDAP_ADMIN_USERNAME
+              value: admin
+            - name: LLDAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-admin-password
+                  key: password
+          volumeMounts:
+            - name: lldap-schemas
+              mountPath: /bootstrap/user-schemas
+      volumes:
+        - name: lldap-schemas
+          configMap:
+            name: lldap-schemas

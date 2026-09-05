@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: keycloak
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "0"
+
+resources:
+  - namespace.yaml
+  - https://github.com/keycloak/keycloak-k8s-resources//kubernetes?ref=26.7.0

@@ -1,0 +1,16 @@
+[
+	{
+		"name": "sshPublicKey",
+		"attributeType": "STRING",
+		"isEditable": true,
+		"isList": true,
+		"isVisible": true
+	},
+	{
+		"name": "wireguardPublicKey",
+		"attributeType": "STRING",
+		"isEditable": true,
+		"isList": true,
+		"isVisible": true
+	}
+]

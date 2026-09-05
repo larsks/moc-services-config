@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base/argocd/nonha/
+
+patches:
+  # In the kind environment there is no cloud load balancer to populate
+  # .status.loadBalancer on Ingress resources, so ArgoCD's built-in Ingress
+  # health check leaves them stuck in "Progressing" forever. Override it to
+  # treat an Ingress as Healthy regardless of load balancer status.
+  - patch: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-cm
+      data:
+        resource.customizations.health.networking.k8s.io_Ingress: |
+          hs = {}
+          hs.status = "Healthy"
+          hs.message = "Ingress considered healthy (kind overlay, no load balancer status)"
+          return hs

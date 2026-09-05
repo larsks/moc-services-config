@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base/keycloak/
+  - config
+
+patches:
+  - patch: |
+      apiVersion: k8s.keycloak.org/v2beta1
+      kind: Keycloak
+      metadata:
+        name: keycloak
+        namespace: keycloak
+      spec:
+        hostname:
+          hostname: http://keycloak.keycloak.local:7080
+        ingress:
+          enabled: true
+          className: haproxy
+          annotations:
+            haproxy-ingress.github.io/secure-backends: "true"
+
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: lldap
+      spec:
+        template:
+          spec:
+            containers:
+              - name: lldap
+                env:
+                  - name: LLDAP_FORCE_LDAP_USER_PASS_RESET
+                    value: "always"

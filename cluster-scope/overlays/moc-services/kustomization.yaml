@@ -1,7 +1,0 @@
-kind: Kustomization
-resources:
-- ../../bundles/crunchy-postgres-operator/
-- ../../bundles/keycloak-operator/
-- ../../../postgres/base/
-- ../../../keycloak/keycloak-database-setup/
-- ../../../keycloak/base/
