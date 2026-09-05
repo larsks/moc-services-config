@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base/argocd/nonha/
+  - ingress.yaml
+
+patches:
+  # In the kind environment there is no cloud load balancer to populate
+  # .status.loadBalancer on Ingress resources, so ArgoCD's built-in Ingress
+  # health check leaves them stuck in "Progressing" forever. Override it to
+  # treat an Ingress as Healthy regardless of load balancer status.
+  - patch: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-cm
+      data:
+        resource.customizations.health.networking.k8s.io_Ingress: |
+          hs = {}
+          hs.status = "Healthy"
+          hs.message = "Ingress considered healthy (kind overlay, no load balancer status)"
+          return hs
+  # Serve the UI and API under /argocd so it can share a single ingress host
+  # (localhost:7080) with the other path-routed services.
+  #
+  # The ingress backend uses the argocd-server Service's "http" port, but
+  # argocd-server serves TLS on that port by default. Run it insecure so it
+  # actually speaks plain HTTP there, matching haproxy-ingress not treating
+  # this backend as secure.
+  - patch: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-cmd-params-cm
+      data:
+        server.basehref: /argocd
+        server.rootpath: /argocd
+        server.insecure: "true"

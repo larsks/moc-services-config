@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: keycloak
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "2"
+
+labels:
+  - pairs:
+      component: lldap
+    includeSelectors: true
+
+resources:
+  - deployment.yaml
+  - service.yaml
+
+configMapGenerator:
+  - name: lldap-schemas
+    files:
+      - files/userschema.json
+
+images:
+  - name: lldap
+    newName: docker.io/lldap/lldap
+    newTag: 2026-08-28-alpine-rootless

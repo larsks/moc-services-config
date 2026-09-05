@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak-ingress
+  namespace: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    haproxy-ingress.github.io/secure-backends: "true"
+    # Forward the original Host header verbatim so that redirects
+    # preserve the port.
+    haproxy-ingress.github.io/config-backend: |
+      http-request set-header X-Forwarded-Host %[req.hdr(host)]
+spec:
+  ingressClassName: haproxy
+  rules:
+    - http:
+        paths:
+          - path: /keycloak
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak-service
+                port:
+                  name: https

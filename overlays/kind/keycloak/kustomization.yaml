@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base/keycloak/
+  - config
+
+patches:
+  - patch: |
+      apiVersion: k8s.keycloak.org/v2beta1
+      kind: Keycloak
+      metadata:
+        name: keycloak
+        namespace: keycloak
+      spec:
+        hostname:
+          hostname: http://localhost:7080/keycloak
+        # The operator's built-in Ingress only ever matches on hostname, with
+        # a catch-all "/" path, so it can't share localhost:7080 with the
+        # other path-routed services. Disable it in favor of the custom
+        # Ingress in config/keycloak-ingress.yaml.
+        ingress:
+          enabled: false
+        additionalOptions:
+          - name: http-relative-path
+            value: /keycloak

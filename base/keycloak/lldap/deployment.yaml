@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lldap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: lldap
+          image: lldap
+          envFrom:
+            - secretRef:
+                name: lldap-credentials
+          env:
+            - name: LLDAP_FORCE_LDAP_USER_PASS_RESET
+              value: "always"
+            - name: LLDAP_LDAP_USER_EMAIL
+              value: contact@massopen.cloud
+            - name: PG_URI
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-pguser-lldap
+                  key: uri
+            # This is a workaround for the fact that in postgres >= 15, users no longer have write access
+            # to the public schema by default. The postgres operator creators a writable schema
+            # named after the user.
+            - name: LLDAP_DATABASE_URL
+              value: "$(PG_URI)?-c%20search_path%3Dlldap"
+            - name: LLDAP_VERBOSE
+              value: "true"
+          ports:
+            - containerPort: 3890
+              name: ldap
+              hostPort: 3890
+            - containerPort: 17170
+              name: ui
+              hostPort: 17170
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+        - name: bootstrap
+          image: lldap
+          command: ["/bin/bash", "-c", "/app/bootstrap.sh && sleep infinity"]
+          env:
+            - name: LLDAP_ADMIN_USERNAME
+              value: admin
+            - name: LLDAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-credentials
+                  key: LLDAP_LDAP_USER_PASS
+            - name: LLDAP_URL
+              value: "http://localhost:17170"
+          volumeMounts:
+            - name: lldap-schemas
+              mountPath: /bootstrap/user-schemas
+      volumes:
+        - name: lldap-schemas
+          configMap:
+            name: lldap-schemas
