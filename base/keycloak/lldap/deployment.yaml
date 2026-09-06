@@ -15,21 +15,6 @@ spec:
           env:
             - name: LLDAP_LDAP_USER_EMAIL
               value: contact@massopen.cloud
-            - name: LLDAP_LDAP_USER_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: lldap-admin-password
-                  key: password
-            - name: LLDAP_JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: lldap-jwt-secret
-                  key: password
-            - name: LLDAP_KEY_SEED
-              valueFrom:
-                secretKeyRef:
-                  name: lldap-key-seed
-                  key: password
             - name: PG_USER
               valueFrom:
                 secretKeyRef:
@@ -55,6 +40,9 @@ spec:
                 secretKeyRef:
                   name: postgres-pguser-lldap
                   key: dbname
+            # This is a workaround for the fact that in postgres >= 15, users no longer have write access
+            # to the public schema by default. The postgres operator creators a writable schema
+            # named after the user.
             - name: LLDAP_DATABASE_URL
               value: "postgres://$(PG_USER):$(PG_PASSWORD)@$(PG_HOST):$(PG_PORT)/$(PG_DBNAME)?-c%20search_path%3Dlldap"
             - name: LLDAP_VERBOSE
@@ -81,11 +69,6 @@ spec:
               value: "http://localhost:17170"
             - name: LLDAP_ADMIN_USERNAME
               value: admin
-            - name: LLDAP_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: lldap-admin-password
-                  key: password
           volumeMounts:
             - name: lldap-schemas
               mountPath: /bootstrap/user-schemas

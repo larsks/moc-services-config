@@ -3,6 +3,4 @@ kind: Kustomization
 namespace: keycloak
 resources:
   - lldap-ingress.yaml
-  - lldap-admin-password.yaml
-  - lldap-jwt-secret.yaml
-  - lldap-key-seed.yaml
+  - lldap-credentials.yaml

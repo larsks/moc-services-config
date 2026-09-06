@@ -30,6 +30,16 @@ patches:
           spec:
             containers:
               - name: lldap
+                envFrom:
+                  - secretRef:
+                      name: lldap-credentials
                 env:
                   - name: LLDAP_FORCE_LDAP_USER_PASS_RESET
                     value: "always"
+              - name: bootstrap
+                env:
+                  - name: LLDAP_ADMIN_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: lldap-credentials
+                        key: LLDAP_LDAP_USER_PASS
