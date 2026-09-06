@@ -34,57 +34,39 @@ Everything is managed with ArgoCD.
 ```
 base
 ├── applicationsets
-│   ├── kustomization.yaml
 │   └── root.yaml
 ├── argocd
 │   ├── components
 │   │   ├── enable-helm
-│   │   │   └── kustomization.yaml
 │   │   └── healthchecks
-│   │       └── kustomization.yaml
 │   ├── ha
-│   │   └── kustomization.yaml
 │   ├── nonha
-│   │   └── kustomization.yaml
 │   └── shared
-│       ├── kustomization.yaml
 │       └── namespace.yaml
 ├── cert-manager
 │   ├── config
-│   │   ├── kustomization.yaml
 │   │   └── selfsigned.yaml
-│   ├── kustomization.yaml
 │   └── operator
-│       └── kustomization.yaml
 ├── external-secrets
 │   ├── config
-│   │   ├── kustomization.yaml
 │   │   └── password-generator.yaml
-│   ├── kustomization.yaml
 │   └── operator
-│       ├── kustomization.yaml
 │       └── namespace.yaml
 ├── haproxy-ingress
-│   ├── kustomization.yaml
 │   └── namespace.yaml
 ├── keycloak
 │   ├── config
 │   │   ├── keycloak-tls-certificate.yaml
 │   │   ├── keycloak.yaml
-│   │   ├── kustomization.yaml
 │   │   └── postgrescluster.yaml
-│   ├── kustomization.yaml
 │   ├── lldap
 │   │   ├── deployment.yaml
 │   │   ├── files
 │   │   │   └── userschema.json
-│   │   ├── kustomization.yaml
 │   │   └── service.yaml
 │   └── operator
-│       ├── kustomization.yaml
 │       └── namespace.yaml
 └── pgo
-    ├── kustomization.yaml
     └── namespace.yaml
 ```
 
@@ -111,6 +93,40 @@ overlays
     │       └── lldap-ingress.yaml
     └── pgo
 ```
+
+## Theory of Operation
+
+After deploying ArgoCD, we apply the `root` [ApplicationSet]. An ApplicationSet is a template for creating one or more ArgoCD applications. In this case, we are using the [git generator] to create applications for each directory in the per-environment overlay. For example, if `overlays/kind` contains:
+
+[applicationset]: https://argo-cd.readthedocs.io/en/stable/user-guide/application-set/
+[git generator]: https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Generators-Git/
+
+```
+applicationsets
+argocd
+cert-manager
+external-secrets
+haproxy-ingress
+keycloak
+pgo
+```
+
+Then the `root` ApplicationSet will create:
+
+```
+$ argo app list -o name
+argocd/applicationsets
+argocd/argocd
+argocd/cert-manager
+argocd/external-secrets
+argocd/haproxy-ingress
+argocd/keycloak
+argocd/pgo
+```
+
+This repository makes extensive use of ArgoCD [sync waves] to sequence the installation of dependent resources. In general, all CRDs and operators install at sync-wave 0, while CRs install at sync wave 1. Sync waves are managed by annotations on resources, and in most cases are set in the appropriate `kustomization.yaml` file.
+
+[sync waves]: https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/#how-sync-waves-work
 
 ## Testing in KinD
 
