@@ -12,7 +12,12 @@ spec:
       containers:
         - name: lldap
           image: lldap
+          envFrom:
+            - secretRef:
+                name: lldap-credentials
           env:
+            - name: LLDAP_FORCE_LDAP_USER_PASS_RESET
+              value: "always"
             - name: LLDAP_LDAP_USER_EMAIL
               value: contact@massopen.cloud
             - name: PG_USER
@@ -65,10 +70,15 @@ spec:
           image: lldap
           command: ["/bin/bash", "-c", "/app/bootstrap.sh && sleep infinity"]
           env:
-            - name: LLDAP_URL
-              value: "http://localhost:17170"
             - name: LLDAP_ADMIN_USERNAME
               value: admin
+            - name: LLDAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lldap-credentials
+                  key: LLDAP_LDAP_USER_PASS
+            - name: LLDAP_URL
+              value: "http://localhost:17170"
           volumeMounts:
             - name: lldap-schemas
               mountPath: /bootstrap/user-schemas
