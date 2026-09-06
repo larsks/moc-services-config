@@ -25,4 +25,3 @@ oc apply -k overlays/kind/applicationsets --server-side
 
 echo "waiting for keycloak namespace"
 until oc get ns keycloak >&/dev/null; do sleep 1; done
-oc apply -k secrets
