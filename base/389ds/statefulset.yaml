@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: 389ds
+spec:
+  replicas: 1
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: ldapdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+  template:
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: 389ds
+          image: 389ds
+          envFrom:
+            - secretRef:
+                name: 389ds-credentials
+          ports:
+            - containerPort: 3389
+              name: ldap
+              hostPort: 3389
+            - containerPort: 3636
+              name: ldaps
+              hostPort: 3636
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          volumeMounts:
+            - name: ldapdata
+              mountPath: /data
+      volumes:
+        - name: ldapdata
+          persistentVolumeClaim:
+            claimName: ldapdata

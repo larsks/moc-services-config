@@ -8,7 +8,7 @@ spec:
   generators:
     - git:
         repoURL: &repoURL https://github.com/larsks/moc-services-config.git
-        revision: &revision feature/argocd
+        revision: &revision 389ds
         files:
           - path: PATCHME
   template:

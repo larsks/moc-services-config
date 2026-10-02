@@ -15,3 +15,7 @@ nodes:
       - containerPort: 17170
         hostPort: 17170
         protocol: TCP
+      # Exposing 389ds
+      - containerPort: 3389
+        hostPort: 3389
+        protocol: TCP
