@@ -19,6 +19,23 @@ spec:
   template:
     spec:
       terminationGracePeriodSeconds: 5
+      initContainers:
+        - name: install-custom-schema
+          image: 389ds
+          command:
+            - /bin/sh
+            - -c
+            - >-
+              if [ -f /data/config/container.inf ]; then
+                test -d /data/config/schema &&
+                cp /custom-schema/98wireguard.ldif /data/config/schema/98wireguard.ldif;
+              fi
+          volumeMounts:
+            - name: ldapdata
+              mountPath: /data
+            - name: custom-schema
+              mountPath: /custom-schema
+              readOnly: true
       containers:
         - name: 389ds
           image: 389ds
@@ -34,10 +51,10 @@ spec:
               hostPort: 3636
           resources:
             requests:
-              memory: "64Mi"
+              memory: "256Mi"
               cpu: "100m"
             limits:
-              memory: "128Mi"
+              memory: "512Mi"
               cpu: "250m"
           volumeMounts:
             - name: ldapdata
@@ -46,7 +63,7 @@ spec:
               mountPath: /data/tls
               readOnly: true
             - name: custom-schema
-              mountPath: /data/config/schema/98wireguard.ldif
+              mountPath: /etc/dirsrv/schema/98wireguard.ldif
               subPath: 98wireguard.ldif
               readOnly: true
       volumes:
