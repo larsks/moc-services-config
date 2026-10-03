@@ -4,7 +4,7 @@ namespace: 389ds
 commonAnnotations:
   # These resources must be applied with the StatefulSet: its pod cannot be
   # healthy until cert-manager has created the mounted TLS Secret.
-  argocd.argoproj.io/sync-wave: "0"
+  argocd.argoproj.io/sync-wave: "1"
   argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 
 resources:
