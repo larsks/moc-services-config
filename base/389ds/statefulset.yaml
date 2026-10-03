@@ -45,6 +45,10 @@ spec:
             - name: ldap-tls
               mountPath: /data/tls
               readOnly: true
+            - name: custom-schema
+              mountPath: /data/config/schema/98wireguard.ldif
+              subPath: 98wireguard.ldif
+              readOnly: true
       volumes:
         - name: ldapdata
           persistentVolumeClaim:
@@ -59,3 +63,6 @@ spec:
                 path: server.key
               - key: ca.crt
                 path: ca/ca.crt
+        - name: custom-schema
+          configMap:
+            name: 389ds-custom-schema

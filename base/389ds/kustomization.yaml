@@ -13,6 +13,11 @@ resources:
   - service.yaml
   - config
 
+configMapGenerator:
+  - name: 389ds-custom-schema
+    files:
+      - schema/98wireguard.ldif
+
 images:
   - name: 389ds
     newName: docker.io/389ds/dirsrv

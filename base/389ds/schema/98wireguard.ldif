@@ -1,0 +1,2 @@
+dn: cn=schema
+attributeTypes: ( 2.25.118929030723141814887852749734318160106 NAME 'wireguardPublicKey' DESC 'A WireGuard public key' SUP nsSshPublicKey X-ORIGIN 'MOC' )
