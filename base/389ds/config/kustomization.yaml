@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: 389ds
+commonAnnotations:
+  # These resources must be applied with the StatefulSet: its pod cannot be
+  # healthy until cert-manager has created the mounted TLS Secret.
+  argocd.argoproj.io/sync-wave: "0"
+  argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
+resources:
+  - ca-certificate.yaml
+  - ca-issuer.yaml
+  - server-certificate.yaml
+  - ca-reader-rbac.yaml

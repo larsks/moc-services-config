@@ -1,0 +1,7 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: 389ds-ca
+spec:
+  ca:
+    secretName: 389ds-ca

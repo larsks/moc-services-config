@@ -24,6 +24,10 @@ spec:
   http:
     httpEnabled: true
     tlsSecret: keycloak-tls-certificate
+  truststores:
+    389ds-ca:
+      secret:
+        name: 389ds-ca-trust
   proxy:
     headers: xforwarded
 

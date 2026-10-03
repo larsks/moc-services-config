@@ -40,7 +40,20 @@ spec:
           volumeMounts:
             - name: ldapdata
               mountPath: /data
+            - name: ldap-tls
+              mountPath: /data/tls
+              readOnly: true
       volumes:
         - name: ldapdata
           persistentVolumeClaim:
             claimName: ldapdata
+        - name: ldap-tls
+          secret:
+            secretName: 389ds-tls
+            items:
+              - key: tls.crt
+                path: server.crt
+              - key: tls.key
+                path: server.key
+              - key: ca.crt
+                path: ca/ca.crt

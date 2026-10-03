@@ -11,6 +11,7 @@ resources:
   - namespace.yaml
   - statefulset.yaml
   - service.yaml
+  - config
 
 images:
   - name: 389ds

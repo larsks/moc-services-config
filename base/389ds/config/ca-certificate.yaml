@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: 389ds-ca
+spec:
+  isCA: true
+  commonName: 389ds internal CA
+  secretName: 389ds-ca
+  duration: 87600h
+  privateKey:
+    algorithm: RSA
+    rotationPolicy: Never
+    size: 3072
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer
+  usages:
+    - cert sign
+    - crl sign
