@@ -1,0 +1,53 @@
+# TLS termination for 389ds. Envoy serves LDAPS on 6636 and forwards the
+# plaintext LDAP connection to 389ds on localhost. The certificate is delivered
+# through Secret Discovery Service from /etc/envoy/sds/server.yaml. The container
+# entrypoint (envoy/entrypoint.sh) renders that file from the 389ds-tls Secret
+# and keeps it current, so Envoy reloads the certificate without a restart.
+node:
+  id: 389ds
+  cluster: 389ds
+admin:
+  address:
+    socket_address:
+      address: 127.0.0.1
+      port_value: 9901
+static_resources:
+  listeners:
+    - name: ldaps
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 6636
+      filter_chains:
+        - transport_socket:
+            name: envoy.transport_sockets.tls
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+              common_tls_context:
+                tls_certificate_sds_secret_configs:
+                  - name: server
+                    sds_config:
+                      resource_api_version: V3
+                      path_config_source:
+                        path: /etc/envoy/sds/server.yaml
+                        watched_directory:
+                          path: /etc/envoy/sds
+          filters:
+            - name: envoy.filters.network.tcp_proxy
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy
+                stat_prefix: ldaps
+                cluster: ldap
+  clusters:
+    - name: ldap
+      connect_timeout: 5s
+      type: STATIC
+      load_assignment:
+        cluster_name: ldap
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: 127.0.0.1
+                      port_value: 3389

@@ -11,4 +11,4 @@ spec:
       targetPort: ldap
     - name: ldaps
       port: 3636
-      targetPort: ldaps
+      targetPort: ldaps-tls

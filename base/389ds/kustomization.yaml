@@ -17,8 +17,17 @@ configMapGenerator:
   - name: 389ds-custom-schema
     files:
       - schema/98wireguard.ldif
+  - name: 389ds-envoy-config
+    files:
+      - envoy/envoy.yaml
+  - name: 389ds-envoy-entrypoint
+    files:
+      - envoy/entrypoint.sh
 
 images:
   - name: 389ds
     newName: docker.io/389ds/dirsrv
     newTag: latest
+  - name: envoy
+    newName: docker.io/envoyproxy/envoy
+    newTag: v1.34.0

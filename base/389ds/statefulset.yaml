@@ -31,7 +31,6 @@ spec:
               hostPort: 3389
             - containerPort: 3636
               name: ldaps
-              hostPort: 3636
           resources:
             requests:
               memory: "256Mi"
@@ -49,20 +48,43 @@ spec:
               mountPath: /etc/dirsrv/schema/98wireguard.ldif
               subPath: 98wireguard.ldif
               readOnly: true
+        - name: envoy
+          image: envoy
+          command: ["sh", "/entrypoint/entrypoint.sh"]
+          ports:
+            - containerPort: 6636
+              name: ldaps-tls
+              hostPort: 3636
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          readinessProbe:
+            tcpSocket:
+              port: ldaps-tls
+            periodSeconds: 5
+          volumeMounts:
+            - name: envoy-config
+              mountPath: /etc/envoy/envoy.yaml
+              subPath: envoy.yaml
+              readOnly: true
+            - name: envoy-entrypoint
+              mountPath: /entrypoint
+              readOnly: true
+            - name: ldap-tls
+              mountPath: /etc/envoy/tls
+              readOnly: true
+            - name: envoy-sds
+              mountPath: /etc/envoy/sds
       volumes:
-        - name: ldapdata
-          persistentVolumeClaim:
-            claimName: ldapdata
-        - name: ldap-tls
-          secret:
-            secretName: 389ds-tls
-            items:
-              - key: tls.crt
-                path: server.crt
-              - key: tls.key
-                path: server.key
-              - key: ca.crt
-                path: ca/ca.crt
-        - name: custom-schema
+        - name: envoy-config
           configMap:
-            name: 389ds-custom-schema
+            name: 389ds-envoy-config
+        - name: envoy-entrypoint
+          configMap:
+            name: 389ds-envoy-entrypoint
+        - name: envoy-sds
+          emptyDir: {}
