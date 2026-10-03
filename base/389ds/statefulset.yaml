@@ -80,6 +80,19 @@ spec:
             - name: envoy-sds
               mountPath: /etc/envoy/sds
       volumes:
+        - name: ldap-tls
+          secret:
+            secretName: 389ds-tls
+            items:
+              - key: tls.crt
+                path: server.crt
+              - key: tls.key
+                path: server.key
+              - key: ca.crt
+                path: ca/ca.crt
+        - name: custom-schema
+          configMap:
+            name: 389ds-custom-schema
         - name: envoy-config
           configMap:
             name: 389ds-envoy-config
