@@ -1,2 +1,3 @@
 dn: cn=schema
 attributeTypes: ( 2.25.118929030723141814887852749734318160106 NAME 'wireguardPublicKey' DESC 'A WireGuard public key' SUP nsSshPublicKey X-ORIGIN 'MOC' )
+objectClasses: ( 2.25.263791187543153437409955926548249326812 NAME 'wireguardAccount' DESC 'Auxiliary class allowing WireGuard public keys on user entries' SUP top AUXILIARY MAY ( wireguardPublicKey ) X-ORIGIN 'MOC' )
