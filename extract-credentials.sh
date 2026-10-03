@@ -1,4 +1,12 @@
-#!/bin/sh
+#!/bin/bash
+
+while getopts e ch; do
+  case $ch in
+  e) create_envrc=1 ;;
+  *) exit 2 ;;
+  esac
+done
+shift $((OPTIND - 1))
 
 ARGOCD_PASSWORD=$(oc -n argocd extract secret/argocd-initial-admin-secret --to=- 2>/dev/null)
 KEYCLOAK_PASSWORD=$(oc -n keycloak extract secret/keycloak-initial-admin --keys=password --to=- 2>/dev/null)
@@ -22,3 +30,13 @@ LLDAP:
   Username: cn=Directory Manager
   Password: $DS389_PASSWORD
 EOF
+
+if ((create_envrc)); then
+  cat >.envrc <<EOF
+export LDAPTLS_REQCERT=never
+export TF_VAR_ldap_bind_password=$DS389_PASSWORD
+export KEYCLOAK_USER=temp-admin
+export KEYCLOAK_PASSWORD=$KEYCLOAK_PASSWORD
+export LLDAP_PASSWORD=$LLDAP_PASSWORD
+EOF
+fi
