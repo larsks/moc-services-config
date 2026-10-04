@@ -27,5 +27,5 @@ configMapGenerator:
 
 images:
   - name: 389ds
-    newName: docker.io/389ds/dirsrv
-    newTag: latest
+    newName: registry.redhat.io/dirsrv/dirsrv-container-rhel10
+    newTag: "13.2"
