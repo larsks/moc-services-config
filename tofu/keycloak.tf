@@ -288,3 +288,18 @@ resource "keycloak_ldap_group_mapper" "groups" {
   membership_user_ldap_attribute = "uid"
   mode                           = "READ_ONLY"
 }
+
+resource "keycloak_group" "ldapusers" {
+  realm_id = keycloak_realm.moc.id
+  name     = "ldapusers"
+}
+
+# Static (hardcoded) group mapper: every user imported from 389ds is made a
+# member of the ldapusers group, regardless of their LDAP group membership.
+resource "keycloak_ldap_hardcoded_group_mapper" "ldapusers" {
+  name                    = "ldapusers"
+  realm_id                = keycloak_realm.moc.id
+  ldap_user_federation_id = keycloak_ldap_user_federation.directory.id
+
+  group = keycloak_group.ldapusers.path
+}
