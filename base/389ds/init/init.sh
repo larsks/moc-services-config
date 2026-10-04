@@ -9,7 +9,7 @@
 set -eu
 
 dsc=/usr/lib/dirsrv/dscontainer
-ldapi="ldapi://%2Fdata%2Frun%2Fslapd-localhost.socket"
+ldapi="$LDAPI_SOCKET"
 
 "$dsc" -r &
 pid=$!

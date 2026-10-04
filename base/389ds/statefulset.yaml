@@ -29,11 +29,37 @@ spec:
           envFrom:
             - secretRef:
                 name: 389ds-credentials
+          env:
+            # Local ldapi socket. Probes reference this with $(LDAPI_SOCKET), so
+            # the value must be URL-encoded as ldapi:// requires.
+            - name: LDAPI_SOCKET
+              value: "ldapi://%2Fdata%2Frun%2Fslapd-localhost.socket"
           ports:
             - containerPort: 3389
               name: ldap
             - containerPort: 3636
               name: ldaps
+          # The startup probe holds off liveness and readiness until the server
+          # first answers over the local ldapi socket. The init script allows
+          # up to 60 seconds for this, so the probe allows the same.
+          startupProbe:
+            exec:
+              command: ["ldapsearch", "-Y", "EXTERNAL", "-H", "$(LDAPI_SOCKET)", "-b", "", "-s", "base"]
+            periodSeconds: 2
+            failureThreshold: 60
+          # Readiness checks the TCP listener that clients use, since the ldapi
+          # socket does not prove that port 3389 is accepting connections.
+          readinessProbe:
+            exec:
+              command: ["ldapsearch", "-H", "ldap://localhost:3389", "-x", "-b", "", "-s", "base"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["ldapsearch", "-Y", "EXTERNAL", "-H", "$(LDAPI_SOCKET)", "-b", "", "-s", "base"]
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             requests:
               memory: "256Mi"
