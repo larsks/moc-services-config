@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: 389ds
+  name: dirsrv
   annotations:
     argocd.argoproj.io/sync-wave: "3"
-    # Restart 389ds when cert-manager renews its server certificate. 389ds
+    # Restart dirsrv when cert-manager renews its server certificate. dirsrv
     # reads its certificate only at startup.
-    secret.reloader.stakater.com/reload: "389ds-tls"
+    secret.reloader.stakater.com/reload: "dirsrv-tls"
 spec:
   replicas: 1
   volumeClaimTemplates:
@@ -23,12 +23,12 @@ spec:
     spec:
       terminationGracePeriodSeconds: 5
       containers:
-        - name: 389ds
-          image: 389ds
+        - name: dirsrv
+          image: dirsrv
           command: ["sh", "/init/init.sh"]
           envFrom:
             - secretRef:
-                name: 389ds-credentials
+                name: dirsrv-credentials
           env:
             # Local ldapi socket. Probes reference this with $(LDAPI_SOCKET), so
             # the value must be URL-encoded as ldapi:// requires.
@@ -86,7 +86,7 @@ spec:
       volumes:
         - name: ldap-tls
           secret:
-            secretName: 389ds-tls
+            secretName: dirsrv-tls
             items:
               - key: tls.crt
                 path: server.crt
@@ -96,10 +96,10 @@ spec:
                 path: ca/ca.crt
         - name: custom-schema
           configMap:
-            name: 389ds-custom-schema
+            name: dirsrv-custom-schema
         - name: init-script
           configMap:
-            name: 389ds-init-script
+            name: dirsrv-init-script
         - name: init-ldif
           configMap:
-            name: 389ds-init-ldif
+            name: dirsrv-init-ldif

@@ -7,4 +7,4 @@ resources:
   - keycloak.yaml
   - keycloak-tls-certificate.yaml
   - postgrescluster.yaml
-  - 389ds-ca-distribution.yaml
+  - dirsrv-ca-distribution.yaml

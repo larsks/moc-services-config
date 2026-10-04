@@ -11,7 +11,7 @@ shift $((OPTIND - 1))
 ARGOCD_PASSWORD=$(oc -n argocd extract secret/argocd-initial-admin-secret --to=- 2>/dev/null)
 KEYCLOAK_PASSWORD=$(oc -n keycloak extract secret/keycloak-initial-admin --keys=password --to=- 2>/dev/null)
 LLDAP_PASSWORD=$(oc -n keycloak extract secret/lldap-credentials --keys=LLDAP_LDAP_USER_PASS --to=- 2>/dev/null)
-DS_DM_PASSWORD=$(oc -n 389ds extract secret/389ds-credentials --to=- 2>/dev/null)
+DS_DM_PASSWORD=$(oc -n dirsrv extract secret/dirsrv-credentials --to=- 2>/dev/null)
 
 cat <<EOF
 ArgoCD:
@@ -26,7 +26,7 @@ LLDAP:
   URL: http://localhost:7080/lldap/
   Username: admin
   Password: $LLDAP_PASSWORD
-389ds:
+dirsrv:
   Username: cn=Directory Manager
   Password: $DS_DM_PASSWORD
 EOF

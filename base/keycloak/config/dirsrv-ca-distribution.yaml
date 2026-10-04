@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: keycloak-389ds-ca-reader
+  name: keycloak-dirsrv-ca-reader
 ---
 apiVersion: external-secrets.io/v1
 kind: SecretStore
 metadata:
-  name: 389ds-ca-store
+  name: dirsrv-ca-store
 spec:
   provider:
     kubernetes:
-      remoteNamespace: 389ds
+      remoteNamespace: dirsrv
       server:
         caProvider:
           type: ConfigMap
@@ -18,24 +18,24 @@ spec:
           key: ca.crt
       auth:
         serviceAccount:
-          name: keycloak-389ds-ca-reader
+          name: keycloak-dirsrv-ca-reader
 ---
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: 389ds-ca-trust
+  name: dirsrv-ca-trust
 spec:
   refreshInterval: 10m
   secretStoreRef:
-    name: 389ds-ca-store
+    name: dirsrv-ca-store
     kind: SecretStore
   target:
-    name: 389ds-ca-trust
+    name: dirsrv-ca-trust
     creationPolicy: Owner
     template:
       type: Opaque
   data:
     - secretKey: ca.crt
       remoteRef:
-        key: 389ds-ca
+        key: dirsrv-ca
         property: tls.crt

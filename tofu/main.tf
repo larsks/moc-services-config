@@ -6,7 +6,7 @@ provider "ldap" {
 }
 
 # The backend and mapping tree for dc=massopen,dc=cloud are applied from
-# base/389ds/ldif/backend.ldif when the 389ds pod starts. The root entry below
+# base/dirsrv/ldif/backend.ldif when the dirsrv pod starts. The root entry below
 # requires that routing to exist first.
 resource "ldap_entry" "suffix" {
   dn = "dc=massopen,dc=cloud"

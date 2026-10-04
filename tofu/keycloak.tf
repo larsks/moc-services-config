@@ -163,7 +163,7 @@ resource "keycloak_realm_user_profile" "moc" {
 }
 
 resource "keycloak_ldap_user_federation" "directory" {
-  name     = "389ds"
+  name     = "dirsrv"
   realm_id = keycloak_realm.moc.id
   enabled  = true
 
@@ -276,7 +276,7 @@ resource "keycloak_ldap_user_attribute_mapper" "wireguard_public_key" {
 }
 
 resource "keycloak_ldap_group_mapper" "groups" {
-  name                    = "389ds-groups"
+  name                    = "dirsrv-groups"
   realm_id                = keycloak_realm.moc.id
   ldap_user_federation_id = keycloak_ldap_user_federation.directory.id
 
@@ -294,7 +294,7 @@ resource "keycloak_group" "ldapusers" {
   name     = "ldapusers"
 }
 
-# Static (hardcoded) group mapper: every user imported from 389ds is made a
+# Static (hardcoded) group mapper: every user imported from dirsrv is made a
 # member of the ldapusers group, regardless of their LDAP group membership.
 resource "keycloak_ldap_hardcoded_group_mapper" "ldapusers" {
   name                    = "ldapusers"

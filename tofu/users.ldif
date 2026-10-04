@@ -1,4 +1,4 @@
-# Sample users for the 389ds directory. Import once with:
+# Sample users for the dirsrv directory. Import once with:
 #
 #   ldapadd -x -H ldap://localhost:3389 -D "cn=Directory Manager" -W -f users.ldif
 #

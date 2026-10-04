@@ -1,8 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../../../base/389ds/
-  - 389ds-credentials.yaml
+  - ../../../base/dirsrv/
+  - dirsrv-credentials.yaml
   # rhds-pull-secret.yaml
 
 # Publish the LDAP ports on fixed NodePorts. cluster.yaml maps these node ports
@@ -10,12 +10,12 @@ resources:
 patches:
   - target:
       kind: Service
-      name: 389ds
+      name: dirsrv
     patch: |-
       apiVersion: v1
       kind: Service
       metadata:
-        name: 389ds
+        name: dirsrv
       spec:
         type: NodePort
         ports:

@@ -1,11 +1,11 @@
 variable "ldap_host" {
-  description = "Host running the 389 Directory Server instance."
+  description = "Host running the directory server instance."
   type        = string
   default     = "localhost"
 }
 
 variable "ldap_port" {
-  description = "LDAP port for the 389 Directory Server instance."
+  description = "LDAP port for the directory server instance."
   type        = number
   default     = 3389
 }
@@ -37,7 +37,7 @@ variable "keycloak_base_path" {
 variable "keycloak_ldap_host" {
   description = "LDAP hostname as reachable from Keycloak inside the kind cluster."
   type        = string
-  default     = "389ds.389ds.svc.cluster.local"
+  default     = "dirsrv.dirsrv.svc.cluster.local"
 }
 
 variable "keycloak_ldap_port" {

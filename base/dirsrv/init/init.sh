@@ -1,5 +1,5 @@
 #!/bin/bash
-# Container entrypoint for 389ds. Starts the server, applies every LDIF file in
+# Container entrypoint for dirsrv. Starts the server, applies every LDIF file in
 # /ldif-init over the local ldapi socket, and keeps the server running in the
 # foreground until it receives SIGTERM.
 #
@@ -33,7 +33,7 @@ i=0
 until ldapsearch -Y EXTERNAL -H "$ldapi" -b "" -s base >/dev/null 2>&1; do
   i=$((i + 1))
   if [ "$i" -ge 60 ]; then
-    echo "ERROR: 389ds did not become healthy" >&2
+    echo "ERROR: dirsrv did not become healthy" >&2
     kill -TERM "$pid" 2>/dev/null || true
     exit 1
   fi

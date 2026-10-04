@@ -1,4 +1,4 @@
-# Server settings applied by the 389ds init script (base/389ds/init/init.sh) on
+# Server settings applied by the dirsrv init script (base/dirsrv/init/init.sh) on
 # every start. Every file in this directory is applied in turn.
 #
 # passwordTrackUpdateTime records password change times (pwdUpdateTime) on user

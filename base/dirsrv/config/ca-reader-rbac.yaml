@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: keycloak-389ds-ca-reader
+  name: keycloak-dirsrv-ca-reader
 rules:
   - apiGroups: [""]
     resources:
@@ -20,12 +20,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: keycloak-389ds-ca-reader
+  name: keycloak-dirsrv-ca-reader
 subjects:
   - kind: ServiceAccount
-    name: keycloak-389ds-ca-reader
+    name: keycloak-dirsrv-ca-reader
     namespace: keycloak
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: keycloak-389ds-ca-reader
+  name: keycloak-dirsrv-ca-reader

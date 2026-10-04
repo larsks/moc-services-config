@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: 389ds
+namespace: dirsrv
 
 labels:
   - pairs:
-      component: 389ds
+      component: dirsrv
     includeSelectors: true
 
 resources:
@@ -15,18 +15,18 @@ resources:
   - config
 
 configMapGenerator:
-  - name: 389ds-custom-schema
+  - name: dirsrv-custom-schema
     files:
       - schema/98wireguard.ldif
-  - name: 389ds-init-script
+  - name: dirsrv-init-script
     files:
       - init/init.sh
-  - name: 389ds-init-ldif
+  - name: dirsrv-init-ldif
     files:
       - ldif/config.ldif
       - ldif/backend.ldif
 
 images:
-  - name: 389ds
+  - name: dirsrv
     newName: registry.redhat.io/dirsrv/dirsrv-container-rhel10
     newTag: "13.2"

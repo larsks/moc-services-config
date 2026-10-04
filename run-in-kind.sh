@@ -39,7 +39,7 @@ log "applying applicationsets"
 oc apply -k overlays/kind/applicationsets --server-side >/dev/null
 
 oc config set-context --current --namespace=argocd
-for app in applicationsets argocd cert-manager external-secrets haproxy-ingress pgo keycloak 389ds; do
+for app in applicationsets argocd cert-manager external-secrets haproxy-ingress pgo keycloak dirsrv; do
   log "waiting for $app to exist..."
   timeout 60 sh -c 'until oc get application -n argocd "$1" >&/dev/null; do sleep 1; done' -- "$app" ||
     die "application $app was never created"

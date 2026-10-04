@@ -1,22 +1,22 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: 389ds-server
+  name: dirsrv-server
 spec:
-  secretName: 389ds-tls
-  commonName: 389ds.389ds.svc.cluster.local
+  secretName: dirsrv-tls
+  commonName: dirsrv.dirsrv.svc.cluster.local
   duration: 2160h
   renewBefore: 360h
   privateKey:
     algorithm: RSA
     size: 2048
   issuerRef:
-    name: 389ds-ca
+    name: dirsrv-ca
     kind: Issuer
   dnsNames:
-    - 389ds
-    - 389ds.389ds
-    - 389ds.389ds.svc
-    - 389ds.389ds.svc.cluster.local
+    - dirsrv
+    - dirsrv.dirsrv
+    - dirsrv.dirsrv.svc
+    - dirsrv.dirsrv.svc.cluster.local
   usages:
     - server auth
