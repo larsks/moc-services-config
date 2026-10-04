@@ -15,9 +15,11 @@ ldapi="ldapi://%2Fdata%2Frun%2Fslapd-localhost.socket"
 pid=$!
 trap 'kill -TERM "$pid" 2>/dev/null || true' TERM INT
 
-# Wait until the server answers.
+# Wait until the server answers. This queries the server directly rather than
+# using "dscontainer -H": running -H while the server is still starting launches
+# a second instance, which stops the first one.
 i=0
-until "$dsc" -H >/dev/null 2>&1; do
+until ldapsearch -Y EXTERNAL -H "$ldapi" -b "" -s base >/dev/null 2>&1; do
   i=$((i + 1))
   if [ "$i" -ge 60 ]; then
     echo "ERROR: 389ds did not become healthy" >&2
