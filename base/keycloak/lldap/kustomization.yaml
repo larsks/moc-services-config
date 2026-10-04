@@ -21,4 +21,4 @@ configMapGenerator:
 images:
   - name: lldap
     newName: docker.io/lldap/lldap
-    newTag: 2026-08-28-alpine-rootless
+    newTag: 2026-09-22-alpine-rootless
