@@ -8,7 +8,18 @@
 # the rest of the import.
 set -eu
 
-dsc=/usr/lib/dirsrv/dscontainer
+for try in /usr/lib/dirsrv/dscontainer /usr/libexec/dirsrv/dscontainer; do
+  if [ -x "$try" ]; then
+    dsc=$try
+    break
+  fi
+done
+
+if [ -z "$dsc" ]; then
+  echo "ERROR: unable to find dscontainer" >&2
+  exit 1
+fi
+
 ldapi="$LDAPI_SOCKET"
 
 "$dsc" -r &
