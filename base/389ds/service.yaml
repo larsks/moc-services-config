@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: 389ds
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   ports:
     - name: ldap

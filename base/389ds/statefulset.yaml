@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: 389ds
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "3"
     # Restart 389ds when cert-manager renews its server certificate. 389ds
     # reads its certificate only at startup.
     secret.reloader.stakater.com/reload: "389ds-tls"
