@@ -5,8 +5,8 @@ metadata:
 spec:
   secretName: 389ds-tls
   commonName: 389ds.389ds.svc.cluster.local
-  duration: 2160h
-  renewBefore: 360h
+  duration: 1h
+  renewBefore: 30m
   privateKey:
     algorithm: RSA
     size: 2048

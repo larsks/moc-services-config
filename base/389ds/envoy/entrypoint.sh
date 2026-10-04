@@ -22,12 +22,10 @@ render() {
       printf '    name: server\n'
       printf '    tls_certificate:\n'
       printf '      certificate_chain:\n'
-      printf '        inline_string: |\n'
-      sed 's/^/          /' "$in/server.crt"
+      printf '        filename: %s\n' "$in/server.crt"
       printf '      private_key:\n'
-      printf '        inline_string: |\n'
-      sed 's/^/          /' "$in/server.key"
-    } > "$out/server.yaml.tmp"
+      printf '        filename: %s\n' "$in/server.key"
+    } >"$out/server.yaml.tmp"
     mv -f "$out/server.yaml.tmp" "$out/server.yaml"
     last="$cur"
     echo "rendered certificate $cur"
