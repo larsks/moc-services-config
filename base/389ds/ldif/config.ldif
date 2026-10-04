@@ -1,0 +1,10 @@
+# Server settings applied by the 389ds init script (base/389ds/init/init.sh) on
+# every start. Every file in this directory is applied in turn.
+#
+# passwordTrackUpdateTime records password change times (pwdUpdateTime) on user
+# entries, so Keycloak can show when a password was last changed.
+
+dn: cn=config
+changetype: modify
+replace: passwordTrackUpdateTime
+passwordTrackUpdateTime: on

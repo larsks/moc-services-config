@@ -17,6 +17,12 @@ configMapGenerator:
   - name: 389ds-custom-schema
     files:
       - schema/98wireguard.ldif
+  - name: 389ds-init-script
+    files:
+      - init/init.sh
+  - name: 389ds-init-ldif
+    files:
+      - ldif/config.ldif
 
 images:
   - name: 389ds

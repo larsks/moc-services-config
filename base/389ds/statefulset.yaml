@@ -25,6 +25,7 @@ spec:
       containers:
         - name: 389ds
           image: 389ds
+          command: ["sh", "/init/init.sh"]
           envFrom:
             - secretRef:
                 name: 389ds-credentials
@@ -52,6 +53,12 @@ spec:
               mountPath: /etc/dirsrv/schema/98wireguard.ldif
               subPath: 98wireguard.ldif
               readOnly: true
+            - name: init-script
+              mountPath: /init
+              readOnly: true
+            - name: init-ldif
+              mountPath: /ldif-init
+              readOnly: true
       volumes:
         - name: ldap-tls
           secret:
@@ -66,3 +73,9 @@ spec:
         - name: custom-schema
           configMap:
             name: 389ds-custom-schema
+        - name: init-script
+          configMap:
+            name: 389ds-init-script
+        - name: init-ldif
+          configMap:
+            name: 389ds-init-ldif
