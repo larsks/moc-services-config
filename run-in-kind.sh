@@ -33,6 +33,12 @@ kind create cluster --config cluster.yaml --name "moc-services-$rand_suffix" --k
 export KUBECONFIG="kubeconfig-$rand_suffix"
 log "kubeconfig: $KUBECONFIG"
 
+if [ -f pull-secret.json ]; then
+  log "Installing pull-secret in dirsrv namespace"
+  oc create ns dirsrv
+  oc -n dirsrv create secret generic pull-secret --type kubernetes.io/dockerconfigjson --from-file .dockerconfigjson=pull-secret.json
+fi
+
 log "installing argocd"
 oc apply -k overlays/kind/argocd --server-side >/dev/null
 

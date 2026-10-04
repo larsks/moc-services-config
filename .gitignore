@@ -1,2 +1,3 @@
 charts/
 /overlays/kind/dirsrv/rhds-pull-secret.yaml
+/pull-secret.json
