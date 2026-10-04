@@ -1,0 +1,6 @@
+dn: cn=manual_backup,cn=backup,cn=tasks,cn=config
+objectClass: top
+objectClass: extensibleObject
+cn: manual_backup
+nsArchiveDir: /tmp/backup-2026-10-04
+nsDatabaseType: ldbm database

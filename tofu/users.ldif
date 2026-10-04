@@ -1,0 +1,34 @@
+# Sample users for the 389ds directory. Import once with:
+#
+#   ldapadd -x -H ldap://localhost:3389 -D "cn=Directory Manager" -W -f users.ldif
+#
+# ldapadd fails for entries that already exist, and it does not change them. The
+# password is hashed by the server on import. Attributes such as nsSshPublicKey
+# and wireguardPublicKey are not listed here, so they can be managed through
+# Keycloak without being reset.
+
+dn: uid=alice,ou=people,dc=massopen,dc=cloud
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: nsAccount
+objectClass: wireguardAccount
+cn: Alice Example
+givenName: Alice
+sn: Example
+mail: alice@example.com
+userPassword: secret1
+
+dn: uid=bob,ou=people,dc=massopen,dc=cloud
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: nsAccount
+objectClass: wireguardAccount
+cn: Bob User
+givenName: Bob
+sn: User
+mail: bob@example.com
+userPassword: secret2

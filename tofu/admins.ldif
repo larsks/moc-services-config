@@ -1,0 +1,7 @@
+dn: cn=admins,ou=groups,dc=massopen,dc=cloud
+changetype: modify
+add: member
+member: uid=alice,ou=people,dc=massopen,dc=cloud
+-
+add: member
+member: uid=bob,ou=people,dc=massopen,dc=cloud
