@@ -3,3 +3,24 @@ kind: Kustomization
 resources:
   - ../../../base/389ds/
   - 389ds-credentials.yaml
+
+# Publish the LDAP ports on fixed NodePorts. cluster.yaml maps these node ports
+# to the host.
+patches:
+  - target:
+      kind: Service
+      name: 389ds
+    patch: |-
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: 389ds
+      spec:
+        type: NodePort
+        ports:
+          - name: ldap
+            port: 3389
+            nodePort: 30389
+          - name: ldaps
+            port: 3636
+            nodePort: 30636

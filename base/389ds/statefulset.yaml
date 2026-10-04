@@ -32,10 +32,8 @@ spec:
           ports:
             - containerPort: 3389
               name: ldap
-              hostPort: 3389
             - containerPort: 3636
               name: ldaps
-              hostPort: 3636
           resources:
             requests:
               memory: "256Mi"

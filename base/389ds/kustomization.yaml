@@ -23,6 +23,7 @@ configMapGenerator:
   - name: 389ds-init-ldif
     files:
       - ldif/config.ldif
+      - ldif/backend.ldif
 
 images:
   - name: 389ds

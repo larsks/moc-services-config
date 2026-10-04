@@ -1,0 +1,19 @@
+# The massopen backend and its mapping tree. These live under cn=config, which
+# is local to each server and is not replicated, so every pod needs them applied
+# at startup. Adds that already exist fail harmlessly under "-a -c" in the init
+# script.
+
+dn: cn=massopen,cn=ldbm database,cn=plugins,cn=config
+objectClass: top
+objectClass: extensibleObject
+objectClass: nsBackendInstance
+cn: massopen
+nsslapd-suffix: dc=massopen,dc=cloud
+
+dn: cn=dc\3dmassopen\2cdc\3dcloud,cn=mapping tree,cn=config
+objectClass: top
+objectClass: extensibleObject
+objectClass: nsMappingTree
+cn: dc=massopen,dc=cloud
+nsslapd-state: backend
+nsslapd-backend: massopen
