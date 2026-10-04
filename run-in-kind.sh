@@ -23,6 +23,11 @@ if kind get clusters -q | grep -q moc-services; then
   kind get clusters | grep moc-services | xargs -n1 kind delete cluster --name
 fi
 
+if [ -f tofu/terraform.tfstate ]; then
+  log "deleting old tofu state"
+  rm -f tofu/terraform.tfstate*
+fi
+
 log "creating cluster"
 kind create cluster --config cluster.yaml --name "moc-services-$rand_suffix" --kubeconfig "kubeconfig-$rand_suffix"
 export KUBECONFIG="kubeconfig-$rand_suffix"
