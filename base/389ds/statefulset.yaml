@@ -100,4 +100,5 @@ spec:
           configMap:
             name: 389ds-envoy-entrypoint
         - name: envoy-sds
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
