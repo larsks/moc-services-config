@@ -22,6 +22,12 @@ variable "ldap_bind_password" {
   sensitive   = true
 }
 
+variable "sssd_bind_password" {
+  description = "Password for the uid=sssd-bind service account used by SSSD clients for POSIX lookups. Set with TF_VAR_sssd_bind_password."
+  type        = string
+  sensitive   = true
+}
+
 variable "keycloak_url" {
   description = "Scheme and host for the Keycloak admin API."
   type        = string

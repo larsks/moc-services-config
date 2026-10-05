@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../../../base/dirsrv/
   - dirsrv-credentials.yaml
+  - sssd-bind-credentials.yaml
 
 # Publish the LDAP ports on fixed NodePorts. cluster.yaml maps these node ports
 # to the host.

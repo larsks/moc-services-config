@@ -22,10 +22,36 @@ resource "ldap_entry" "people" {
   data_json = jsonencode({
     objectClass = ["top", "organizationalUnit"]
     aci = [
-      "(targetattr = \"nsSshPublicKey || wireguardPublicKey\")(version 3.0; acl \"Keycloak manages public keys\"; allow (read, write) (userdn = \"ldap:///${coalesce(var.keycloak_ldap_bind_dn, var.ldap_bind_dn)}\");)"
+      "(targetattr = \"nsSshPublicKey || wireguardPublicKey\")(version 3.0; acl \"Keycloak manages public keys\"; allow (read, write) (userdn = \"ldap:///${coalesce(var.keycloak_ldap_bind_dn, var.ldap_bind_dn)}\");)",
+      "(targetattr = \"objectClass || uid || cn || uidNumber || gidNumber || homeDirectory || loginShell || gecos || nsSshPublicKey\")(version 3.0; acl \"SSSD reads POSIX account attributes\"; allow (read, search, compare) (userdn = \"ldap:///${ldap_entry.sssd_bind.dn}\");)"
     ]
   })
 
+}
+
+# Service OU for non-human bind accounts, separate from ou=people so these
+# entries never show up in Keycloak's user federation (users_dn is scoped to
+# ou=people).
+resource "ldap_entry" "services" {
+  dn = "ou=services,${ldap_entry.suffix.dn}"
+
+  data_json = jsonencode({
+    objectClass = ["top", "organizationalUnit"]
+  })
+}
+
+# Low-privilege bind account Fedora clients use to let SSSD read POSIX
+# attributes and SSH public keys. Scoped by the ACI on ou=people above rather
+# than granted Directory Manager access.
+resource "ldap_entry" "sssd_bind" {
+  dn = "uid=sssd-bind,${ldap_entry.services.dn}"
+
+  data_json = jsonencode({
+    objectClass  = ["top", "account", "simpleSecurityObject"]
+    uid          = ["sssd-bind"]
+    userPassword = [var.sssd_bind_password]
+    description  = ["Bind account used by SSSD clients for POSIX identity lookups"]
+  })
 }
 
 resource "ldap_entry" "groups" {

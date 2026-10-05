@@ -6,6 +6,12 @@
 # password is hashed by the server on import. Attributes such as nsSshPublicKey
 # and wireguardPublicKey are not listed here, so they can be managed through
 # Keycloak without being reset.
+#
+# posixAccount with uidNumber/gidNumber/homeDirectory/loginShell is required
+# for SSSD clients (id_provider = ldap, the default rfc2307 schema) to resolve
+# these as POSIX users; nsAccount alone only carries auth-related attributes.
+# uidNumber/gidNumber start at 10000 to stay clear of the 1000+ range typically
+# used by the first local user on client machines (e.g. Fedora cloud images).
 
 dn: uid=alice,ou=people,dc=massopen,dc=cloud
 objectClass: top
@@ -14,11 +20,16 @@ objectClass: organizationalPerson
 objectClass: inetOrgPerson
 objectClass: nsAccount
 objectClass: wireguardAccount
+objectClass: posixAccount
 cn: Alice Example
 givenName: Alice
 sn: Example
 mail: alice@example.com
 userPassword: secret1
+uidNumber: 10000
+gidNumber: 10000
+homeDirectory: /home/alice
+loginShell: /bin/bash
 
 dn: uid=bob,ou=people,dc=massopen,dc=cloud
 objectClass: top
@@ -27,8 +38,13 @@ objectClass: organizationalPerson
 objectClass: inetOrgPerson
 objectClass: nsAccount
 objectClass: wireguardAccount
+objectClass: posixAccount
 cn: Bob User
 givenName: Bob
 sn: User
 mail: bob@example.com
 userPassword: secret2
+uidNumber: 10001
+gidNumber: 10001
+homeDirectory: /home/bob
+loginShell: /bin/bash
