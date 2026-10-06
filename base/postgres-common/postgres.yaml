@@ -6,6 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     argocd.argoproj.io/sync-wave: "1"
+    postgres-operator.crunchydata.com/autoCreateUserSchema: "true"
 spec:
   users:
     - name: keycloak
