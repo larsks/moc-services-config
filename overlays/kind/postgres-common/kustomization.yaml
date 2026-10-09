@@ -2,3 +2,37 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../../base/postgres-common
+  - postgres-pgbackrest-s3.yaml
+
+patches:
+  - patch: |
+      apiVersion: postgres-operator.crunchydata.com/v1beta1
+      kind: PostgresCluster
+      metadata:
+        name: postgres
+        namespace: postgres
+      spec:
+        backups:
+          pgbackrest:
+            configuration:
+              - secret:
+                  name: postgres-pgbackrest-s3
+            global:
+              # Garage has no virtual-hosted-style DNS, and its S3 TLS
+              # frontend (base/garage) presents a self-signed cert with no
+              # shared CA to trust.
+              repo1-s3-uri-style: path
+              repo1-storage-verify-tls: "n"
+              # Keep two full backups and prune everything older, so
+              # untended backups don't grow the bucket indefinitely.
+              repo1-retention-full: "2"
+              repo1-retention-full-type: count
+            repos:
+              - name: repo1
+                schedules:
+                  full: "0 1 * * 0"
+                  incremental: "0 1 * * 1-6"
+                s3:
+                  bucket: backups
+                  endpoint: garage.garage.svc.cluster.local
+                  region: garage

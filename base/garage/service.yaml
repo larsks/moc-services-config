@@ -12,6 +12,9 @@ spec:
     - name: s3-api
       port: 3900
       targetPort: s3-api
+    - name: s3-api-tls
+      port: 443
+      targetPort: s3-api-tls
     - name: admin
       port: 3903
       targetPort: admin

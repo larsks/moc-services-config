@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: garage-certificate
+  namespace: garage
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  secretName: garage-certificate
+  issuerRef:
+    name: selfsigned
+    kind: ClusterIssuer
+  commonName: garage
+  dnsNames:
+    - garage
+    - garage.garage.svc
+    - garage.garage.svc.cluster.local

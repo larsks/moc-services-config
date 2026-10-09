@@ -4,8 +4,12 @@ namespace: garage
 resources:
   - namespace.yaml
   - configmap.yaml
+  - caddy-configmap.yaml
+  - certificate.yaml
   - generators.yaml
   - externalsecret.yaml
   - pvc.yaml
   - deployment.yaml
   - service.yaml
+  - secretstore.yaml
+  - rbac.yaml

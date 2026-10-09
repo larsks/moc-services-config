@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: garage-caddy-config
+  namespace: garage
+data:
+  Caddyfile: |
+    {
+      admin off
+    }
+
+    :443 {
+      tls /etc/garage-tls/tls.crt /etc/garage-tls/tls.key
+      reverse_proxy 127.0.0.1:3900
+    }

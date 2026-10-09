@@ -1,0 +1,23 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: postgres-pgbackrest-s3
+  namespace: postgres
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: garage
+  target:
+    name: postgres-pgbackrest-s3
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      data:
+        s3.conf: |
+          [global]
+          repo1-s3-key=garageadmin
+          repo1-s3-key-secret={{ .default_secret_key }}
+  dataFrom:
+    - extract:
+        key: garage-credentials

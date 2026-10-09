@@ -57,6 +57,20 @@ spec:
               subPath: garage.toml
             - name: data
               mountPath: /data
+        - name: caddy
+          # Garage's S3 API has no native TLS support; pgBackRest refuses
+          # non-TLS S3 endpoints, so this terminates TLS in front of it.
+          image: caddy:2.11.6-alpine
+          ports:
+            - name: s3-api-tls
+              containerPort: 443
+          volumeMounts:
+            - name: caddy-config
+              mountPath: /etc/caddy/Caddyfile
+              subPath: Caddyfile
+            - name: tls
+              mountPath: /etc/garage-tls
+              readOnly: true
       volumes:
         - name: config
           configMap:
@@ -64,3 +78,9 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: garage-data
+        - name: caddy-config
+          configMap:
+            name: garage-caddy-config
+        - name: tls
+          secret:
+            secretName: garage-certificate
