@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: garage
+  namespace: garage
+  labels:
+    app: garage
+spec:
+  replicas: 1
+  strategy:
+    # A sole ReadWriteOnce PVC can't be mounted by an old and new pod at
+    # the same time, so a rolling update would deadlock.
+    type: Recreate
+  selector:
+    matchLabels:
+      app: garage
+  template:
+    metadata:
+      labels:
+        app: garage
+    spec:
+      containers:
+        - name: garage
+          image: dxflrs/garage:v2.4.1
+          command: ["/garage"]
+          args: ["server", "--single-node", "--default-bucket"]
+          env:
+            - name: GARAGE_RPC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: garage-credentials
+                  key: rpc_secret
+            - name: GARAGE_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: garage-credentials
+                  key: admin_token
+            - name: GARAGE_DEFAULT_ACCESS_KEY
+              value: garageadmin
+            - name: GARAGE_DEFAULT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: garage-credentials
+                  key: default_secret_key
+            - name: GARAGE_DEFAULT_BUCKET
+              value: backups
+          ports:
+            - name: s3-api
+              containerPort: 3900
+            - name: rpc
+              containerPort: 3901
+            - name: admin
+              containerPort: 3903
+          volumeMounts:
+            - name: config
+              mountPath: /etc/garage.toml
+              subPath: garage.toml
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: config
+          configMap:
+            name: garage-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: garage-data

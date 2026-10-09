@@ -2,6 +2,7 @@
 
 ARGOCD_PASSWORD=$(oc -n argocd extract secret/argocd-initial-admin-secret --to=- 2>/dev/null)
 KEYCLOAK_PASSWORD=$(oc -n keycloak extract secret/keycloak-initial-admin --keys=password --to=- 2>/dev/null)
+GARAGE_DEFAULT_SECRET_KEY=$(oc -n garage extract secret/garage-credentials --keys=default_secret_key --to=- 2>/dev/null)
 
 cat <<EOF
 ArgoCD:
@@ -11,4 +12,7 @@ Keycloak:
   URL: https://localhost:7443/
   Username: temp-admin
   Password: $KEYCLOAK_PASSWORD
+Garage:
+  Username: garageadmin
+  SecretKey: $GARAGE_DEFAULT_SECRET_KEY
 EOF

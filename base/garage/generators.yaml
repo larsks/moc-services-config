@@ -1,0 +1,47 @@
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: garage-rpc-secret
+  namespace: garage
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  # Garage requires the RPC secret to be exactly 32 bytes of hex (64 hex
+  # characters); hex-encoding a 32-character password yields that.
+  length: 32
+  encoding: hex
+  symbols: 0
+  allowRepeat: true
+  noUpper: false
+  secretKeys:
+    - rpc_secret
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: garage-admin-token
+  namespace: garage
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  length: 32
+  symbols: 0
+  allowRepeat: true
+  noUpper: false
+  secretKeys:
+    - admin_token
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: garage-default-secret-key
+  namespace: garage
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  length: 32
+  symbols: 0
+  allowRepeat: true
+  noUpper: false
+  secretKeys:
+    - default_secret_key
