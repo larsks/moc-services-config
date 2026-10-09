@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: git-server
+  namespace: argocd
+spec:
+  selector:
+    app: git-server
+  ports:
+    - name: git
+      port: 9418
+      targetPort: git
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-server
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: git-server
+  template:
+    metadata:
+      labels:
+        app: git-server
+    spec:
+      containers:
+        # We reuse the ArgoCD image rather than pulling a dedicated one: it is
+        # already on the node, and it is one of the few readily available
+        # images that ships git-daemon (Alpine splits it into a separate
+        # package that alpine/git does not install).
+        - name: git-daemon
+          image: quay.io/argoproj/argocd:v3.5.4
+          command:
+            - git
+          args:
+            - daemon
+            - --verbose
+            - --export-all
+            - --base-path=/srv
+            - --reuseaddr
+            - --listen=0.0.0.0
+            - --port=9418
+            - /srv/repo
+          env:
+            # The repository is bind-mounted from the host, so it is owned by
+            # the host user rather than by the container user. Without this,
+            # git refuses to read it ("detected dubious ownership").
+            - name: GIT_CONFIG_COUNT
+              value: "1"
+            - name: GIT_CONFIG_KEY_0
+              value: safe.directory
+            - name: GIT_CONFIG_VALUE_0
+              value: "*"
+          ports:
+            - name: git
+              containerPort: 9418
+          readinessProbe:
+            tcpSocket:
+              port: git
+          volumeMounts:
+            - name: repo
+              mountPath: /srv/repo
+              readOnly: true
+      volumes:
+        # cluster.yaml mounts the working copy here on the node.
+        - name: repo
+          hostPath:
+            path: /repo
+            type: Directory

@@ -15,3 +15,21 @@ patches:
       - op: replace
         path: /spec/template/spec/syncPolicy/automated/prune
         value: true
+      # Point ArgoCD at the in-cluster git server (overlays/kind/argocd)
+      # instead of GitHub, so the Kind cluster deploys the working copy. Both
+      # the generator and the generated Applications need patching: the base
+      # shares one value between them via a YAML anchor, which kustomize has
+      # already resolved into two independent fields by this point.
+      - op: replace
+        path: /spec/generators/0/git/repoURL
+        value: &repoURL git://git-server.argocd.svc.cluster.local/repo
+      - op: replace
+        path: /spec/template/spec/source/repoURL
+        value: *repoURL
+      # Track whatever branch is checked out rather than main.
+      - op: replace
+        path: /spec/generators/0/git/revision
+        value: &revision HEAD
+      - op: replace
+        path: /spec/template/spec/source/targetRevision
+        value: *revision

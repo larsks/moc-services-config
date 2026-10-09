@@ -9,3 +9,10 @@ nodes:
       - containerPort: 30443
         hostPort: 7443
         protocol: TCP
+    # run-in-kind.sh substitutes @@REPO_PATH@@ with the absolute path to this
+    # repository. The git-server deployment in overlays/kind/argocd serves it
+    # to ArgoCD.
+    extraMounts:
+      - hostPath: "@@REPO_PATH@@"
+        containerPath: /repo
+        readOnly: true

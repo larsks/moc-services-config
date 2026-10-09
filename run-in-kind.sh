@@ -28,9 +28,16 @@ if [ -f tofu/terraform.tfstate ]; then
   rm -f tofu/terraform.tfstate*
 fi
 
+if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+  log "WARNING: you have uncommitted changes; ArgoCD only sees committed work"
+fi
+
 log "creating cluster"
 export KUBECONFIG="kubeconfig"
-kind create cluster --config cluster.yaml --name "moc-services-$rand_suffix" --kubeconfig "$KUBECONFIG"
+cluster_config=$(mktemp -t moc-services-cluster-XXXXXX.yaml)
+trap 'rm -f "$cluster_config"' EXIT
+sed "s|@@REPO_PATH@@|$PWD|g" cluster.yaml >"$cluster_config"
+kind create cluster --config "$cluster_config" --name "moc-services-$rand_suffix" --kubeconfig "$KUBECONFIG"
 
 if [ -f pull-secret.json ]; then
   log "Installing pull-secret in dirsrv namespace"
@@ -43,7 +50,7 @@ oc apply -k overlays/kind/argocd --server-side >/dev/null
 oc config set-context --current --namespace=argocd
 
 log "waiting for argocd to become ready"
-oc wait --for condition=Available --timeout=5m -n argocd deploy/argocd-server deploy/argocd-repo-server ||
+oc wait --for condition=Available --timeout=5m -n argocd deploy/argocd-server deploy/argocd-repo-server deploy/git-server ||
   die "failed waiting for argocd"
 
 log "applying applicationsets"

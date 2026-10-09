@@ -175,6 +175,24 @@ deployment.apps/argocd-repo-server condition met
 2026-10-07 13:06:42 all done.
 ```
 
+### Testing local changes
+
+The Kind cluster deploys *your working copy*, not GitHub. `run-in-kind.sh` bind-mounts this repository into the cluster node, and the `git-server` deployment in the `argocd` namespace ([`git-server.yaml`](overlays/kind/argocd/git-server.yaml)) serves it over the `git://` protocol. The root ApplicationSet is patched to use that server and to track `HEAD`, so the cluster follows whichever branch you have checked out.
+
+This lets you test changes without pushing anything to the remote. ArgoCD clones a git repository, though, so it only sees **committed** work:
+
+```sh
+git commit -am 'try something'
+```
+
+ArgoCD polls for changes every three minutes. To pick a commit up right away:
+
+```sh
+argocd app refresh keycloak
+```
+
+Uncommitted changes are invisible to ArgoCD; `run-in-kind.sh` warns if you have any when it starts.
+
 ## License
 
 [Apache 2.0 License](LICENSE).
