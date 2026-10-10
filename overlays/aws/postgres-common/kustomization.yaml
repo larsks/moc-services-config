@@ -2,3 +2,32 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../../base/postgres-common
+  - postgres-pgbackrest-s3.yaml
+
+patches:
+  - patch: |
+      apiVersion: postgres-operator.crunchydata.com/v1beta1
+      kind: PostgresCluster
+      metadata:
+        name: postgres
+        namespace: postgres
+      spec:
+        backups:
+          pgbackrest:
+            configuration:
+              - secret:
+                  name: postgres-pgbackrest-s3
+            global:
+              # Keep two full backups and prune everything older, so
+              # untended backups don't grow the bucket indefinitely.
+              repo1-retention-full: "2"
+              repo1-retention-full-type: count
+            repos:
+              - name: repo1
+                schedules:
+                  full: "0 1 * * 0"
+                  incremental: "0 1 * * 1-6"
+                s3:
+                  bucket: moc-services-keycloak-backup
+                  endpoint: s3.us-east-005.backblazeb2.com
+                  region: us-east-005
